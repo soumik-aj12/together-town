@@ -56,11 +56,12 @@ model Element {
 }
 
 model Map {
-  id     String  @id @unique @default(cuid())
-  width  Int
-  height Int
-  name   String
-  maps  mapElements[]
+  id         String  @id @unique @default(cuid())
+  width      Int
+  height     Int
+  name       String
+  thumbnail  String
+  maps       mapElements[]
 }
 
 model mapElements {
