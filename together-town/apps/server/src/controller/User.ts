@@ -27,8 +27,10 @@ export const UserMetadata = async (req: Request, res: Response) => {
 
 export const GetAllUserMetadata = async (req: Request, res: Response) => {
     const userIds = (req.query.userIds ?? "[]") as string;
-    const userIdsArr = (userIds).slice(1, userIds.length-2).split(",") ;
-
+    const userIdsArr = (userIds).slice(1, userIds.length-1).split(",") ;
+    console.log(userIds);
+    console.log(userIdsArr);
+    
     const metadata = await client.user.findMany({
         where:{
             id:{
@@ -40,6 +42,8 @@ export const GetAllUserMetadata = async (req: Request, res: Response) => {
             id: true
         }
     });
+    console.log(metadata);
+    
     res.status(200).json({error: false, data: metadata.map((m)=>({
         userId: m.id,
         avatarId: m.avatar?.imageUrl

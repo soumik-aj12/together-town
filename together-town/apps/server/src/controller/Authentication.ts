@@ -23,7 +23,7 @@ export const Signup = async (req: Request,res: Response)=>{
         }
         const hashedPwd = await hash(data.data.password);
         
-        await client.user.create({
+        const newUser = await client.user.create({
             data:{
                 email: data.data.email,
                 username: data.data.username,
@@ -33,7 +33,7 @@ export const Signup = async (req: Request,res: Response)=>{
         })
         console.log("Registration complete! You can now login.");
         
-        res.status(200).json({error: false, message:"Registration complete! You can now login."});
+        res.status(200).json({error: false, message:"Registration complete! You can now login.", userId: newUser.id});
     } catch (error) {
         console.log(error);
         res.status(400).json({error:true, message: "Internal Server Error"})

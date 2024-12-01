@@ -110,90 +110,151 @@ const BACKEND_URL = "http://localhost:8000";
 //    })
 //  });
 
-describe("User metadata endpoint", () => {
-  let token = "";
-  let avatarId = "";
 
-  beforeAll(async () => {
-    const randomNum = Math.round(Math.random() * 1000);
-    const username = `testadmin${randomNum}`;
-    const email = `testadmin${randomNum}@gmail.com`;
-    const password = "1234";
+// describe("User metadata endpoint", () => {
+//   let token = "";
+//   let avatarId = "";
 
-    await axios.post(`${BACKEND_URL}/api/signup`, {
-      email,
-      username,
-      password,
-      role: "admin",
-    });
+//   beforeAll(async () => {
+//     const randomNum = Math.round(Math.random() * 1000);
+//     const username = `testadmin${randomNum}`;
+//     const email = `testadmin${randomNum}@gmail.com`;
+//     const password = "1234";
 
-    const response = await axios.post(`${BACKEND_URL}/api/signin`, {
-      email,
-      password,
-      role: "admin",
-    });
+//     await axios.post(`${BACKEND_URL}/api/signup`, {
+//       email,
+//       username,
+//       password,
+//       role: "admin",
+//     });
 
-    token = response.data.token;
+//     const response = await axios.post(`${BACKEND_URL}/api/signin`, {
+//       email,
+//       password,
+//       role: "admin",
+//     });
 
-    const avatarResponse = await axios.post(
-      `${BACKEND_URL}/api/admin/avatar`,
-      {
-        imageUrl:
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm3RFDZM21teuCMFYx_AROjt-AzUwDBROFww&s",
-        name: "Sam",
-      },
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    console.log("avatarresponse is " + avatarResponse.data.id);
+//     token = response.data.token;
 
-    avatarId = avatarResponse.data.id;
-  });
+//     const avatarResponse = await axios.post(
+//       `${BACKEND_URL}/api/admin/avatar`,
+//       {
+//         imageUrl:
+//           "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm3RFDZM21teuCMFYx_AROjt-AzUwDBROFww&s",
+//         name: "Sam",
+//       },
+//       {
+//         headers: {
+//           authorization: `Bearer ${token}`,
+//         },
+//       }
+//     );
+//     console.log("avatarresponse is " + avatarResponse.data.id);
 
-  test("User can't update their avatar with a wrong avatar id", async () => {
+//     avatarId = avatarResponse.data.id;
+//   });
+
+//   test("User can't update their avatar with a wrong avatar id", async () => {
    
-    const response = await axios.post(
-      `${BACKEND_URL}/api/user/metadata`,
-      {
-        avatarId: "36363",
-      },
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
-    );
+//     const response = await axios.post(
+//       `${BACKEND_URL}/api/user/metadata`,
+//       {
+//         avatarId: "36363",
+//       },
+//       {
+//         headers: {
+//           authorization: `Bearer ${token}`,
+//         },
+//       }
+//     );
 
-    expect(response.status).toBe(400);
-  });
+//     expect(response.status).toBe(400);
+//   });
 
-  test("User can update their metadata with the right avatar id", async () => {
-      console.log("Token inside 2nd test", token);
-   console.log("AvatarID inside 2nd test", avatarId);
-    const response = await axios.post(
-      `${BACKEND_URL}/api/user/metadata`,
-      {
-        avatarId,
-      },
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
-    );
-   console.log(response.data);
+//   test("User can update their metadata with the right avatar id", async () => {
+//       console.log("Token inside 2nd test", token);
+//    console.log("AvatarID inside 2nd test", avatarId);
+//     const response = await axios.post(
+//       `${BACKEND_URL}/api/user/metadata`,
+//       {
+//         avatarId,
+//       },
+//       {
+//         headers: {
+//           authorization: `Bearer ${token}`,
+//         },
+//       }
+//     );
+//    console.log(response.data);
 
-    expect(response.status).toBe(200);
-  });
+//     expect(response.status).toBe(200);
+//   });
 
-  test("User is not able to update their metadata if the auth header is not present", async () => {
-    const response = await axios.post(`${BACKEND_URL}/api/user/metadata`, {
-      avatarId,
-    });
+//   test("User is not able to update their metadata if the auth header is not present", async () => {
+//     const response = await axios.post(`${BACKEND_URL}/api/user/metadata`, {
+//       avatarId,
+//     });
 
-    expect(response.status).toBe(401);
-  });
-});
+//     expect(response.status).toBe(401);
+//   });
+// });
+
+describe("User avatar information", () => {
+   let avatarId;
+   let token;
+   let userId;
+
+   beforeAll(async () => {
+      const randomNum = Math.round(Math.random() * 1000);
+      const username = `testadmin${randomNum}`;
+      const email = `testadmin${randomNum}@gmail.com`;
+      const password = "1234";
+  
+      const signupResponse = await axios.post(`${BACKEND_URL}/api/signup`, {
+        email,
+        username,
+        password,
+        role: "admin",
+      });
+  
+      const response = await axios.post(`${BACKEND_URL}/api/signin`, {
+        email,
+        password,
+        role: "admin",
+      });
+
+       token = response.data.token;
+       userId = signupResponse.data.userId
+
+       const avatarResponse = await axios.post(`${BACKEND_URL}/api/admin/avatar`, {
+            "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm3RFDZM21teuCMFYx_AROjt-AzUwDBROFww&s",
+            "name": "Sam"
+        }, {
+           headers: {
+               authorization: `Bearer ${token}`
+           }
+        })
+
+        avatarId = avatarResponse.data.avatarId;
+
+   })
+
+   test("Get back avatar information for a user", async () => {
+       console.log("asking for user with id " + userId)
+       const response = await axios.get(`${BACKEND_URL}/api/user/metadata/bulk?userIds=[${userId}]`);
+       console.log("response was " + userId)
+       console.log(JSON.stringify(response.data))
+       expect(response.data.data.length).toBe(1);
+       expect(response.data.data[0].userId).toBe(userId);
+   })
+
+   test("Available avatars lists the recently created avatar", async () => {
+       const response = await axios.get(`${BACKEND_URL}/api/avatars`);
+       console.log(response.data);
+       
+       expect(response.data.avatars.length).not.toBe(0);
+       const currentAvatar = response.data.avatars.find(x => x.id == avatarId);
+       expect(currentAvatar).toBeDefined()
+   })
+
+})

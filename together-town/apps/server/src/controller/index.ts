@@ -3,15 +3,13 @@ import client from "@repo/db/client";
 
 export const getAllAvatars = async (req: Request, res: Response) => {
   try {
-    const avatars = await client.element.findMany();
+    const avatars = await client.avatar.findMany();
     res.status(200).json({
       error: false,
       avatars: avatars.map((avatar) => ({
-        id: avatar.id,
-        height: avatar.height,
-        width: avatar.width,
+        avatarId: avatar.id,
+        name: avatar.name,
         imageUrl: avatar.imageUrl,
-        static: avatar.static,
       })),
     });
   } catch (error) {

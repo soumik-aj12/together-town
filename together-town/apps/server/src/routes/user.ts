@@ -5,4 +5,4 @@ export const userRouter = Router();
 
 userRouter.post("/metadata", userMiddleware, UserMetadata);
 
-userRouter.post("/metadata/bulk",GetAllUserMetadata);
+userRouter.get("/metadata/bulk",GetAllUserMetadata);
