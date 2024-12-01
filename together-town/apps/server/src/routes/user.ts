@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { GetAllUserMetadata, UserMetadata } from "../controller/User";
-import { adminMiddleware } from "../middleware/admin";
+import { userMiddleware } from "../middleware/user";
 export const userRouter = Router();
 
-userRouter.post("/metadata", adminMiddleware, UserMetadata);
+userRouter.post("/metadata", userMiddleware, UserMetadata);
 
 userRouter.post("/metadata/bulk",GetAllUserMetadata);

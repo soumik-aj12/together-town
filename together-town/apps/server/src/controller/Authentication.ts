@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
 export const Signup = async (req: Request,res: Response)=>{
     const data = SignupSchema.safeParse(req.body);
-    console.log(req.body);
+    // console.log(req.body);
     
     if (!data.success) {
         res.status(400).json({error:true, message: "Validation failed"})
@@ -31,6 +31,8 @@ export const Signup = async (req: Request,res: Response)=>{
                 role: data.data.role === "admin" ? "Admin" : "User",
             }
         })
+        console.log("Registration complete! You can now login.");
+        
         res.status(200).json({error: false, message:"Registration complete! You can now login."});
     } catch (error) {
         console.log(error);

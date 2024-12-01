@@ -4,18 +4,18 @@ import z from "zod"
 export const SignupSchema = z.object({
     email: z.string().email(),
     username: z.string(),
-    password: z.string().min(8).max(255),
+    password: z.string().min(4).max(255),
     role: z.enum(["user","admin"])
 })
 
 export const SigninSchema = z.object({
     email: z.string().email(),
-    password: z.string().min(8).max(255),
+    password: z.string().min(4).max(255),
     role: z.enum(["user","admin"])
 })
 
 export const UpdateAvatarSchema = z.object({
-    avatar: z.string().url(),
+    avatarId: z.string(),
 })
 
 export const CreateSpaceSchema = z.object({
