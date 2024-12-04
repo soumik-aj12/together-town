@@ -16,10 +16,11 @@ export const CreateSpace = async (req:Request, res:Response) => {
                 creatorId: req.userId!
             }
         });
-        res.status(200).json({error: false, message: "Space Created!", spaceId: space.id})
+        res.status(200).json({error: false, message: "Space Created!", spaceId: space.id});
+        return;
     }
 
-    const map = await client.map.findUnique({
+    const map = await client.map.findFirst({
         where: {
             id: data.data.mapId
         },
@@ -30,7 +31,8 @@ export const CreateSpace = async (req:Request, res:Response) => {
         }
     });
     if(!map){
-        res.status(404).json({error:true, message:"Map Not Found!"});
+        res.status(400).json({error:true, message:"Map Not Found!"});
+        return;
     }
     let space = await client.$transaction(async ()=>{
         const space = await client.space.create({
@@ -57,9 +59,9 @@ export const CreateSpace = async (req:Request, res:Response) => {
 }
 
 export const DeleteSpace = async (req:Request, res:Response) => {
-    const space = await client.space.findUnique({
+    const space = await client.space.findFirst({
         where:{
-            id: req.params.id
+            id: req.params.spaceId
         },
         select:{
             creatorId: true
@@ -75,7 +77,7 @@ export const DeleteSpace = async (req:Request, res:Response) => {
     }
     await client.space.delete({
         where:{
-            id: req.params.id
+            id: req.params.spaceId
         }
     });
     res.status(200).json({error:false, message:"Space deleted!"});
@@ -111,7 +113,8 @@ export const AddElementInSpace = async (req:Request, res:Response) => {
         }
     });
     if(!space){
-        res.status(400).json({error: true, message: "Space not found!"})
+        res.status(400).json({error: true, message: "Space not found!"});
+        return;
     }
 
     await client.spaceElements.create({
@@ -157,19 +160,23 @@ export const GetArenaSpace = async (req:Request, res:Response) => {
         include:{
             elements:{
                 include:{
-                    element: true
+                    element:true
                 }
             }
         }
     });
-
+    console.log(space);
+    
     if(!space){
-        res.status(404).json({error: true, message: "Space not found!"});
+        res.status(400).json({error: true, message: "Space not found!"});
+        return;
     }
+    console.log(space);
+    
     res.status(200).json({
         error: false,
         data:{
-            dimensions:`${space?.width}×${space?.height}`,
+            dimensions:`${space?.width}x${space?.height}`,
             elements: space?.elements.map((e)=>({
                 id: e.id,
                 element: {

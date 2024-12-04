@@ -17,6 +17,8 @@ export const CreateElement = async (req:Request,res:Response) => {
 
             }
         });
+        console.log(element);
+        
         res.status(200).json({error: false, message: "Element Created!", id: element.id});
     } catch (error) {
         res.status(404).json({error: true, message: "Internal Server Error"})

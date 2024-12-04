@@ -21,6 +21,7 @@ export const Signup = async (req: Request,res: Response)=>{
             res.status(400).json({error:true, message: "Email already in use!"})
             return
         }
+        console.log(req.body);
         const hashedPwd = await hash(data.data.password);
         
         const newUser = await client.user.create({
