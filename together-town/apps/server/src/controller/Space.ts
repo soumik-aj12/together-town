@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { AddElementSchema, CreateSpaceSchema, DeleteElementSchema } from "../types/schemas";
 import client from "@repo/db/client";
+import { log } from "node:console";
 export const CreateSpace = async (req:Request, res:Response) => {
     const data = CreateSpaceSchema.safeParse(req.body);
     if(!data.success){
@@ -12,7 +13,7 @@ export const CreateSpace = async (req:Request, res:Response) => {
             data:{
                 name: data.data.name,
                 width: parseInt(data.data.dimensions.split("x")[0]),
-                height: parseInt(data.data.dimensions.split("y")[1]),
+                height: parseInt(data.data.dimensions.split("x")[1]),
                 creatorId: req.userId!
             }
         });
@@ -38,16 +39,16 @@ export const CreateSpace = async (req:Request, res:Response) => {
         const space = await client.space.create({
             data:{
                 name: data.data.name,
-                width: map?.width!,
-                height: map?.height!,
-                creatorId: req.userId!
+                width: map.width,
+                height: map.height,
+                creatorId: req.userId!,
             }
         });
 
         await client.spaceElements.createMany({
-            data:map!.maps.map((ele)=>({
+            data:map.maps.map((ele)=>({
                 spaceId: space.id,
-                elementId: ele.id,
+                elementId: ele.elementId,
                 x: ele.x!,
                 y: ele.y!,
             }))
@@ -105,13 +106,18 @@ export const AddElementInSpace = async (req:Request, res:Response) => {
     const parseData = AddElementSchema.safeParse(req.body);
     const space = await client.space.findUnique({
         where:{
-            id: req.params.spaceId,
+            id: parseData.data?.spaceId,
             creatorId: req.userId
         },select:{
             width: true,
             height: true
         }
     });
+    if(parseData.data?.x! < 0 || parseData.data?.y! < 0 || parseData.data?.x! > space?.width! || parseData.data?.y! > space?.height!) {
+        res.status(400).json({error:true, message: "Element out of bounds!"})
+        return;
+    }
+
     if(!space){
         res.status(400).json({error: true, message: "Space not found!"});
         return;
@@ -129,31 +135,33 @@ export const AddElementInSpace = async (req:Request, res:Response) => {
 }
 
 export const DeleteElementInSpace = async (req:Request, res:Response) => {
+    
     const parseData = DeleteElementSchema.safeParse(req.body);
     const spaceElement = await client.spaceElements.findFirst({
         where:{
-            id: parseData.data?.elementId
+            id: parseData.data?.id
         },
         include:{
             space: true
         }
     });
-
+    console.log("spaceElement in delete",spaceElement);
+    
     if(!spaceElement?.space.creatorId || spaceElement.space.creatorId !== req.userId){
         res.status(400).json({error: true, message: "You don't have permission"});
         return;
     }
     await client.spaceElements.delete({
         where:{
-            id: parseData.data?.elementId
+            id: parseData.data?.id
         }
     });
     res.status(200).json({error: false, message: "Element Deleted!"})
 
 }
 
-export const GetArenaSpace = async (req:Request, res:Response) => {
-    const space = await client.space.findUnique({
+export const GetArenaSpace = async (req:Request, res:Response) => {    
+    const space = await client.space.findFirst({
         where:{
             id: req.params.spaceId
         },
@@ -165,14 +173,12 @@ export const GetArenaSpace = async (req:Request, res:Response) => {
             }
         }
     });
-    console.log(space);
+    
     
     if(!space){
         res.status(400).json({error: true, message: "Space not found!"});
         return;
-    }
-    console.log(space);
-    
+    }    
     res.status(200).json({
         error: false,
         data:{

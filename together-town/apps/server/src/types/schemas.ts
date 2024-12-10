@@ -32,8 +32,7 @@ export const AddElementSchema = z.object({
 })
 
 export const DeleteElementSchema = z.object({
-    elementId: z.string(),
-    spaceId: z.string()
+    id: z.string(),
 })
 
 //Admin

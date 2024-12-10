@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { CreateAvatarSchema, CreateElementSchema, CreateMapSchema, UpdateElementSchema } from "../types/schemas";
 import client from "@repo/db/client";
+import { log } from "node:console";
 export const CreateElement = async (req:Request,res:Response) => {
     try {
         const parsedData = CreateElementSchema.safeParse(req.body);
@@ -16,9 +17,7 @@ export const CreateElement = async (req:Request,res:Response) => {
                 static: parsedData.data.static,
 
             }
-        });
-        console.log(element);
-        
+        });        
         res.status(200).json({error: false, message: "Element Created!", id: element.id});
     } catch (error) {
         res.status(404).json({error: true, message: "Internal Server Error"})
@@ -79,9 +78,16 @@ export const AddMap = async (req:Request,res:Response) => {
             const map = await client.map.create({
                 data:{
                     name: AddMapData.data.name,
-                    width: parseInt(AddMapData.data.dimensions.split("x")[0]),
+                    width: parseInt(AddMapData.data.dimensions.split("x")[0]), 
                     height: parseInt(AddMapData.data.dimensions.split("x")[1]),
-                    thumbnail: AddMapData.data.thumbnail
+                    thumbnail: AddMapData.data.thumbnail,
+                    maps:{
+                        create: AddMapData.data.defaultElements.map(ele=>({
+                            elementId: ele.elementId,
+                            x: ele.x,
+                            y: ele.y
+                        }))
+                    }
                 }
             });
             res.status(200).json({error: false, message: "Map Created!", id: map.id});

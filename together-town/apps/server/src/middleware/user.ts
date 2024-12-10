@@ -6,11 +6,11 @@ dotenv.config()
 export const userMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const header = req.headers["authorization"];
     const token = header?.split(" ")[1];
-    console.log(header);
+    console.log(token);
     
-    if (!token) {
+    if (!token) {        
         res.status(401).json({message: "Unauthorized"});
-        console.log(token);
+        // console.log(token);
         return;
     }
 
