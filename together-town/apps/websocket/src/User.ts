@@ -62,7 +62,7 @@ export class User{
                                     x: Math.floor(Math.random()*space?.width!),
                                 }
                             },
-                            users: Rooms.getInstance().rooms.get(spaceId)?.map((u)=>({id: u.id}))
+                            users: Rooms.getInstance().rooms.get(spaceId)?.filter((u)=> u.id !== this.id).map((u)=>({id: u.id}))
 
                         }
                     });
