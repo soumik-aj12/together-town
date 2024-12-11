@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { CreateAvatarSchema, CreateElementSchema, CreateMapSchema, UpdateElementSchema } from "../types/schemas";
 import client from "@repo/db/client";
-import { log } from "node:console";
 export const CreateElement = async (req:Request,res:Response) => {
     try {
         const parsedData = CreateElementSchema.safeParse(req.body);
@@ -36,9 +35,6 @@ export const UpdateElement = async (req:Request,res:Response) => {
                 where: { id: req.params.elementId },
                 data:{
                     imageUrl: updateData.data.imageUrl,
-                    height: updateData.data.height,
-                    width: updateData.data.width,
-                    static: updateData.data.static
                 }
             });
             res.status(200).json({error: false, message: "Element Updated!",id: element.id} );

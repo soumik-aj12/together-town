@@ -6,8 +6,8 @@ export const adminRouter = Router();
 
 adminRouter.post("/element", adminMiddleware, CreateElement);
 
-adminRouter.put("/element",adminMiddleware, UpdateElement);
+adminRouter.put("/element/:elementId",adminMiddleware, UpdateElement);
 
-adminRouter.post("/avatar", AddAvatar);
+adminRouter.post("/avatar",adminMiddleware, AddAvatar);
 
 adminRouter.post("/map", adminMiddleware, AddMap);

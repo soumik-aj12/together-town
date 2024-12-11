@@ -27,13 +27,12 @@ export const adminMiddleware = (
       role: string;
       userId: string;
     };
-    req.userId = decoded.userId;
-    next();
-
     if (decoded.role !== "Admin") {
-      res.status(401).json({ error: true, message: "Unauthorized" });
+      res.status(403).json({ error: true, message: "Unauthorized" });
       return;
     }
+    req.userId = decoded.userId;
+    next();
   } catch (error) {
     res.status(401).json({ error: true, message: "Server Error" });
   }

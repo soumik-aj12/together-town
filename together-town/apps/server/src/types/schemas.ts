@@ -11,7 +11,6 @@ export const SignupSchema = z.object({
 export const SigninSchema = z.object({
     email: z.string().email(),
     password: z.string().min(4).max(255),
-    role: z.enum(["user","admin"])
 })
 
 export const UpdateAvatarSchema = z.object({
@@ -45,9 +44,6 @@ export const CreateElementSchema = z.object({
 
 export const UpdateElementSchema = z.object({
     imageUrl: z.string(),
-    width: z.number(),
-    height: z.number(),
-    static: z.boolean()
 })
 
 export const CreateAvatarSchema = z.object({
