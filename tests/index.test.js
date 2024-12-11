@@ -1,5 +1,5 @@
 const axios2 = require("axios");
-
+const WebSocket = require("ws");
 const axios = {
   post: async (...args) => {
     try {
@@ -35,235 +35,221 @@ const axios = {
   },
 };
 const BACKEND_URL = "http://localhost:8000";
-// describe('Authentication', () => {
-//     //Signup
-//     test('Unique User Registration - Email', async () => {
-//         const user1 = { username: "testadmin1", email: 'testadmin1@gmail.com', password: 'testpassword', role: "admin" };
-//         const response1 = await axios.post(`${BACKEND_URL}/api/signup`, user1);
-//         expect(response1.status).toBe(200);
+const WS_URL = "ws://localhost:8080"
 
-//         const user2 = { username: "testadmin2", email: 'testadmin1@gmail.com', password: 'testpassword2',role: "admin"};
-//         const response2 = await axios.post(`${BACKEND_URL}/api/signup`, user2);
-//         expect(response2.status).toBe(400);
-//      });
-//      test('Unique User Registration - Username', async () => {
-//         const name = "testadmin"+Math.random();
-//         const user1 = { username: name, email: 'testadmin2@gmail.com', password: 'testpassword', role: "admin" };
-//         const response1 = await axios.post(`${BACKEND_URL}/api/signup`, user1);
-//         expect(response1.status).toBe(200);
-//         const user2 = { username: name, email: 'testadmin2@gmail.com', password: 'testpassword',role: "admin"};
-//         const response2 = await axios.post(`${BACKEND_URL}/api/signup`, user2);
-//         expect(response2.status).toBe(400);
-//      });
-//      test('Email not provided', async () => {
-//         const user = { username: "testadmin"+Math.random(), password: 'testpassword2', role: "admin"};
-//         const response2 = await axios.post(`${BACKEND_URL}/api/signup`, user);
-//         expect(response2.status).toBe(400);
-//      });
-//      test('Username not provided', async () => {
-//         const user = { email: "testadmin3@gmail.com", password: 'testpassword2', role: "admin"};
-//         const response2 = await axios.post(`${BACKEND_URL}/api/signup`, user);
-//         expect(response2.status).toBe(400);
-//      });
-//      test('Password not provided', async () => {
-//         const user = { email: "testadmin3@gmail.com", password: 'testpassword2', role: "admin"};
-//         const response2 = await axios.post(`${BACKEND_URL}/api/signup`, user);
-//         expect(response2.status).toBe(400);
-//      });
+describe('Authentication', () => {
+    //Signup
+    test('Unique User Registration - Email', async () => {
+        const user1 = { username: "testadmin1", email: 'testadmin1@gmail.com', password: 'testpassword', role: "admin" };
+        const response1 = await axios.post(`${BACKEND_URL}/api/signup`, user1);
+        expect(response1.status).toBe(200);
 
-//      //Signin
-//      test('Valid Email', async () => {
-//         const user1 = { email: "testadmin1@gmail.com", password: 'testpassword', role: "admin"};
-//         const response1 = await axios.post(`${BACKEND_URL}/api/signin`, user1);
-//         expect(response1.status).toBe(200);
+        const user2 = { username: "testadmin2", email: 'testadmin1@gmail.com', password: 'testpassword2',role: "admin"};
+        const response2 = await axios.post(`${BACKEND_URL}/api/signup`, user2);
+        expect(response2.status).toBe(400);
+     });
+     test('Unique User Registration - Username', async () => {
+        const name = "testadmin"+Math.random();
+        const user1 = { username: name, email: 'testadmin2@gmail.com', password: 'testpassword', role: "admin" };
+        const response1 = await axios.post(`${BACKEND_URL}/api/signup`, user1);
+        expect(response1.status).toBe(200);
+        const user2 = { username: name, email: 'testadmin2@gmail.com', password: 'testpassword',role: "admin"};
+        const response2 = await axios.post(`${BACKEND_URL}/api/signup`, user2);
+        expect(response2.status).toBe(400);
+     });
+     test('Email not provided', async () => {
+        const user = { username: "testadmin"+Math.random(), password: 'testpassword2', role: "admin"};
+        const response2 = await axios.post(`${BACKEND_URL}/api/signup`, user);
+        expect(response2.status).toBe(400);
+     });
+     test('Username not provided', async () => {
+        const user = { email: "testadmin3@gmail.com", password: 'testpassword2', role: "admin"};
+        const response2 = await axios.post(`${BACKEND_URL}/api/signup`, user);
+        expect(response2.status).toBe(400);
+     });
+     test('Password not provided', async () => {
+        const user = { email: "testadmin3@gmail.com", password: 'testpassword2', role: "admin"};
+        const response2 = await axios.post(`${BACKEND_URL}/api/signup`, user);
+        expect(response2.status).toBe(400);
+     });
 
-//         const user2 = { email: "testadmin3223@gmail.com", password: 'testpassword', role: "admin"};
-//         const response2 = await axios.post(`${BACKEND_URL}/api/signin`, user2);
-//         expect(response2.status).toBe(400);
+     //Signin
+     test('Valid Email', async () => {
+        const user1 = { email: "testadmin1@gmail.com", password: 'testpassword'};
+        const response1 = await axios.post(`${BACKEND_URL}/api/signin`, user1);
+        expect(response1.status).toBe(200);
 
-//      });
+        const user2 = { email: "testadmin3223@gmail.com", password: 'testpassword'};
+        const response2 = await axios.post(`${BACKEND_URL}/api/signin`, user2);
+        expect(response2.status).toBe(400);
 
-//      test('Valid Password', async () => {
-//         const user1 = { email: "testadmin1@gmail.com", password: 'testpassword', role: "admin"};
-//         const response1 = await axios.post(`${BACKEND_URL}/api/signin`, user1);
-//         expect(response1.status).toBe(200);
+     });
 
-//         const user2 = { email: "testadmin3223@gmail.com", password: 'testpasswordsnjsdj', role: "admin"};
-//         const response2 = await axios.post(`${BACKEND_URL}/api/signin`, user2);
-//         expect(response2.status).toBe(400);
+     test('Valid Password', async () => {
+        const user1 = { email: "testadmin1@gmail.com", password: 'testpassword'};
+        const response1 = await axios.post(`${BACKEND_URL}/api/signin`, user1);
+        expect(response1.status).toBe(200);
 
-//      })
+        const user2 = { email: "testadmin3223@gmail.com", password: 'testpasswordsnjsdj'};
+        const response2 = await axios.post(`${BACKEND_URL}/api/signin`, user2);
+        expect(response2.status).toBe(400);
 
-//      test('Valid Password', async () => {
-//       const user1 = { email: "testadmin1@gmail.com", password: 'testpassword', role: "admin"};
-//       const response1 = await axios.post(`${BACKEND_URL}/api/signin`, user1);
-//       expect(response1.status).toBe(200);
+     })
 
-//       // const user2 = { email: "testadmin1@gmail.com", password: 'testpassword', role: "user"};
-//       // const response2 = await axios.post('${BACKEND_URL}/api/signin', user2);
-//       // expect(response2.status).toBe(200);
+ });
 
-//       const user3 = { email: "testadmin1@gmail.com", password: 'testpassword', role: "asdsd"};
-//       const response3 = await axios.post(`${BACKEND_URL}/api/signin`, user3);
-//       expect(response3.status).toBe(400);
+describe("User metadata endpoint", () => {
+  let token = "";
+  let avatarId = "";
 
-//    })
-//  });
+  beforeAll(async () => {
+    const randomNum = Math.round(Math.random() * 1000);
+    const username = `testadmin${randomNum}`;
+    const email = `testadmin${randomNum}@gmail.com`;
+    const password = "1234";
 
-// describe("User metadata endpoint", () => {
-//   let token = "";
-//   let avatarId = "";
+    await axios.post(`${BACKEND_URL}/api/signup`, {
+      email,
+      username,
+      password,
+      role: "admin",
+    });
 
-//   beforeAll(async () => {
-//     const randomNum = Math.round(Math.random() * 1000);
-//     const username = `testadmin${randomNum}`;
-//     const email = `testadmin${randomNum}@gmail.com`;
-//     const password = "1234";
+    const response = await axios.post(`${BACKEND_URL}/api/signin`, {
+      email,
+      password,
+    });
 
-//     await axios.post(`${BACKEND_URL}/api/signup`, {
-//       email,
-//       username,
-//       password,
-//       role: "admin",
-//     });
+    token = response.data.token;
 
-//     const response = await axios.post(`${BACKEND_URL}/api/signin`, {
-//       email,
-//       password,
-//       role: "admin",
-//     });
+    const avatarResponse = await axios.post(
+      `${BACKEND_URL}/api/admin/avatar`,
+      {
+        imageUrl:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm3RFDZM21teuCMFYx_AROjt-AzUwDBROFww&s",
+        name: "Sam",
+      },
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log("avatarresponse is " + avatarResponse.data.id);
 
-//     token = response.data.token;
+    avatarId = avatarResponse.data.id;
+  });
 
-//     const avatarResponse = await axios.post(
-//       `${BACKEND_URL}/api/admin/avatar`,
-//       {
-//         imageUrl:
-//           "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm3RFDZM21teuCMFYx_AROjt-AzUwDBROFww&s",
-//         name: "Sam",
-//       },
-//       {
-//         headers: {
-//           authorization: `Bearer ${token}`,
-//         },
-//       }
-//     );
-//     console.log("avatarresponse is " + avatarResponse.data.id);
+  test("User can't update their avatar with a wrong avatar id", async () => {
 
-//     avatarId = avatarResponse.data.id;
-//   });
+    const response = await axios.post(
+      `${BACKEND_URL}/api/user/metadata`,
+      {
+        avatarId: "36363",
+      },
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-//   test("User can't update their avatar with a wrong avatar id", async () => {
+    expect(response.status).toBe(400);
+  });
 
-//     const response = await axios.post(
-//       `${BACKEND_URL}/api/user/metadata`,
-//       {
-//         avatarId: "36363",
-//       },
-//       {
-//         headers: {
-//           authorization: `Bearer ${token}`,
-//         },
-//       }
-//     );
+  test("User can update their metadata with the right avatar id", async () => {
+      console.log("Token inside 2nd test", token);
+   console.log("AvatarID inside 2nd test", avatarId);
+    const response = await axios.post(
+      `${BACKEND_URL}/api/user/metadata`,
+      {
+        avatarId,
+      },
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }
+    );
+   console.log(response.data);
 
-//     expect(response.status).toBe(400);
-//   });
+    expect(response.status).toBe(200);
+  });
 
-//   test("User can update their metadata with the right avatar id", async () => {
-//       console.log("Token inside 2nd test", token);
-//    console.log("AvatarID inside 2nd test", avatarId);
-//     const response = await axios.post(
-//       `${BACKEND_URL}/api/user/metadata`,
-//       {
-//         avatarId,
-//       },
-//       {
-//         headers: {
-//           authorization: `Bearer ${token}`,
-//         },
-//       }
-//     );
-//    console.log(response.data);
+  test("User is not able to update their metadata if the auth header is not present", async () => {
+    const response = await axios.post(`${BACKEND_URL}/api/user/metadata`, {
+      avatarId,
+    });
 
-//     expect(response.status).toBe(200);
-//   });
+    expect(response.status).toBe(401);
+  });
+});
 
-//   test("User is not able to update their metadata if the auth header is not present", async () => {
-//     const response = await axios.post(`${BACKEND_URL}/api/user/metadata`, {
-//       avatarId,
-//     });
+describe("Avatar", () => {
+  let avatarId;
+  let token;
+  let userId;
 
-//     expect(response.status).toBe(401);
-//   });
-// });
+  beforeAll(async () => {
+    const randomNum = Math.round(Math.random() * 1000);
+    const username = `testadmin${randomNum}`;
+    const email = `testadmin${randomNum}@gmail.com`;
+    const password = "1234";
 
-// describe("Avatar", () => {
-//   let avatarId;
-//   let token;
-//   let userId;
+    const signupResponse = await axios.post(`${BACKEND_URL}/api/signup`, {
+      email,
+      username,
+      password,
+      role: "admin",
+    });
 
-//   beforeAll(async () => {
-//     const randomNum = Math.round(Math.random() * 1000);
-//     const username = `testadmin${randomNum}`;
-//     const email = `testadmin${randomNum}@gmail.com`;
-//     const password = "1234";
+    const response = await axios.post(`${BACKEND_URL}/api/signin`, {
+      email,
+      password,
+    });
 
-//     const signupResponse = await axios.post(`${BACKEND_URL}/api/signup`, {
-//       email,
-//       username,
-//       password,
-//       role: "admin",
-//     });
+    token = response.data.token;
+    userId = signupResponse.data.userId;
 
-//     const response = await axios.post(`${BACKEND_URL}/api/signin`, {
-//       email,
-//       password,
-//       role: "admin",
-//     });
+    const avatarResponse = await axios.post(
+      `${BACKEND_URL}/api/admin/avatar`,
+      {
+        imageUrl:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm3RFDZM21teuCMFYx_AROjt-AzUwDBROFww&s",
+        name: "Sam",
+      },
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-//     token = response.data.token;
-//     userId = signupResponse.data.userId;
+    avatarId = avatarResponse.data.avatarId;
+  });
 
-//     const avatarResponse = await axios.post(
-//       `${BACKEND_URL}/api/admin/avatar`,
-//       {
-//         imageUrl:
-//           "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm3RFDZM21teuCMFYx_AROjt-AzUwDBROFww&s",
-//         name: "Sam",
-//       },
-//       {
-//         headers: {
-//           authorization: `Bearer ${token}`,
-//         },
-//       }
-//     );
+  test("Get back avatar information for a user", async () => {
+    console.log("asking for user with id " + userId);
+    const response = await axios.get(
+      `${BACKEND_URL}/api/user/metadata/bulk?userIds=[${userId}]`
+    );
+    console.log("response was " + userId);
+    console.log(JSON.stringify(response.data));
+    expect(response.data.data.length).toBe(1);
+    expect(response.data.data[0].userId).toBe(userId);
+  });
 
-//     avatarId = avatarResponse.data.avatarId;
-//   });
+  test("Available avatars lists the recently created avatar", async () => {
+    const response = await axios.get(`${BACKEND_URL}/api/avatars`);
+    console.log(response.data);
 
-//   test("Get back avatar information for a user", async () => {
-//     console.log("asking for user with id " + userId);
-//     const response = await axios.get(
-//       `${BACKEND_URL}/api/user/metadata/bulk?userIds=[${userId}]`
-//     );
-//     console.log("response was " + userId);
-//     console.log(JSON.stringify(response.data));
-//     expect(response.data.data.length).toBe(1);
-//     expect(response.data.data[0].userId).toBe(userId);
-//   });
+    expect(response.data.avatars.length).not.toBe(0);
+    const currentAvatar = response.data.avatars.find((x) => x.id == avatarId);
+    expect(currentAvatar).toBeDefined();
+  });
+});
 
-//   test("Available avatars lists the recently created avatar", async () => {
-//     const response = await axios.get(`${BACKEND_URL}/api/avatars`);
-//     console.log(response.data);
-
-//     expect(response.data.avatars.length).not.toBe(0);
-//     const currentAvatar = response.data.avatars.find((x) => x.id == avatarId);
-//     expect(currentAvatar).toBeDefined();
-//   });
-// });
-
-describe.skip("Space", () => {
+describe("Space", () => {
   let mapId;
   let element1Id;
   let element2Id;
@@ -564,7 +550,7 @@ describe.skip("Space", () => {
 //   expect(response.data.data.lements.length).toBe(3);
 // });
 
-describe.skip("Arena endpoints", () => {
+describe("Arena endpoints", () => {
   let mapId;
   let element1Id;
   let element2Id;
@@ -853,7 +839,6 @@ describe("Admin Endpoints", () => {
         },
       }
     );
-    
 
     const mapResponse = await axios.post(
       `${BACKEND_URL}/api/admin/map`,
@@ -982,8 +967,280 @@ describe("Admin Endpoints", () => {
         },
       }
     );
-    console.log(updateElementResponse.data)
+    console.log(updateElementResponse.data);
 
     expect(updateElementResponse.status).toBe(200);
+  });
+});
+
+describe("Websocket tests", () => {
+  let adminToken;
+  let adminUserId;
+  let userToken;
+  let adminId;
+  let userId;
+  let mapId;
+  let element1Id;
+  let element2Id;
+  let spaceId;
+  let ws1;
+  let ws2;
+  let ws1Messages = [];
+  let ws2Messages = [];
+  let userX;
+  let userY;
+  let adminX;
+  let adminY;
+
+  function waitForAndPopLatestMessage(messageArray) {
+    return new Promise((resolve) => {
+      if (messageArray.length > 0) {
+        resolve(messageArray.shift());
+      } else {
+        let interval = setInterval(() => {
+          if (messageArray.length > 0) {
+            resolve(messageArray.shift());
+            clearInterval(interval);
+          }
+        }, 100);
+      }
+    });
+  }
+
+  async function setupHTTP() {
+    const randomNum = Math.round(Math.random() * 1000);
+    const adminUsername = `testadmin${randomNum}`;
+    const adminEmail = `testadmin${randomNum}@gmail.com`;
+    const userUsername = `testuser${randomNum}`;
+    const userEmail = `testuser${randomNum}@gmail.com`;
+    const password = "1234";
+    const adminSignupResponse = await axios.post(`${BACKEND_URL}/api/signup`, {
+      email: adminEmail,
+      username: adminUsername,
+      password,
+      role: "admin",
+    });
+
+    const adminSigninResponse = await axios.post(`${BACKEND_URL}/api/signin`, {
+      email: adminEmail,
+      password,
+    });
+
+    adminUserId = adminSignupResponse.data.userId;
+    adminToken = adminSigninResponse.data.token;
+    console.log("adminSignupResponse.status");
+    console.log(adminSignupResponse.status);
+
+    const userSignupResponse = await axios.post(`${BACKEND_URL}/api/signup`, {
+      username: userUsername,
+      email: userEmail,
+      password,
+      role: "user",
+    });
+    const userSigninResponse = await axios.post(`${BACKEND_URL}/api/signin`, {
+      email: userEmail,
+      password,
+    });
+    userId = userSignupResponse.data.userId;
+    userToken = userSigninResponse.data.token;
+    console.log("useroktne", userToken);
+    const element1Response = await axios.post(
+      `${BACKEND_URL}/api/admin/element`,
+      {
+        imageUrl:
+          "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRCRca3wAR4zjPPTzeIY9rSwbbqB6bB2hVkoTXN4eerXOIkJTG1GpZ9ZqSGYafQPToWy_JTcmV5RHXsAsWQC3tKnMlH_CsibsSZ5oJtbakq&usqp=CAE",
+        width: 1,
+        height: 1,
+        static: true,
+      },
+      {
+        headers: {
+          authorization: `Bearer ${adminToken}`,
+        },
+      }
+    );
+
+    const element2Response = await axios.post(
+      `${BACKEND_URL}/api/admin/element`,
+      {
+        imageUrl:
+          "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRCRca3wAR4zjPPTzeIY9rSwbbqB6bB2hVkoTXN4eerXOIkJTG1GpZ9ZqSGYafQPToWy_JTcmV5RHXsAsWQC3tKnMlH_CsibsSZ5oJtbakq&usqp=CAE",
+        width: 1,
+        height: 1,
+        static: true,
+      },
+      {
+        headers: {
+          authorization: `Bearer ${adminToken}`,
+        },
+      }
+    );
+    element1Id = element1Response.data.id;
+    element2Id = element2Response.data.id;
+
+    const mapResponse = await axios.post(
+      `${BACKEND_URL}/api/admin/map`,
+      {
+        thumbnail: "https://thumbnail.com/a.png",
+        dimensions: "100x200",
+        name: "Defaul space",
+        defaultElements: [
+          {
+            elementId: element1Id,
+            x: 20,
+            y: 20,
+          },
+          {
+            elementId: element1Id,
+            x: 18,
+            y: 20,
+          },
+          {
+            elementId: element2Id,
+            x: 19,
+            y: 20,
+          },
+        ],
+      },
+      {
+        headers: {
+          authorization: `Bearer ${adminToken}`,
+        },
+      }
+    );
+    mapId = mapResponse.data.id;
+
+    const spaceResponse = await axios.post(
+      `${BACKEND_URL}/api/space`,
+      {
+        name: "Test",
+        dimensions: "100x200",
+        mapId: mapId,
+      },
+      {
+        headers: {
+          authorization: `Bearer ${userToken}`,
+        },
+      }
+    );
+
+    console.log(spaceResponse.status);
+    spaceId = spaceResponse.data.spaceId;
+  }
+  async function setupWs() {
+    ws1 = new WebSocket(WS_URL);
+
+    ws1.onmessage = (event) => {
+      console.log("got back adata 1");
+      console.log(event.data);
+
+      ws1Messages.push(JSON.parse(event.data));
+    };
+    await new Promise((r) => {
+      ws1.onopen = r;
+    });
+
+    ws2 = new WebSocket(WS_URL);
+
+    ws2.onmessage = (event) => {
+      console.log("got back data 2");
+      console.log(event.data);
+      ws2Messages.push(JSON.parse(event.data));
+    };
+    await new Promise((r) => {
+      ws2.onopen = r;
+    });
+  }
+
+  beforeAll(async () => {
+    await setupHTTP();
+    await setupWs();
+  });
+
+  test("Get back ack for joining the space", async () => {
+    console.log("insixce first test");
+    ws1.send(
+      JSON.stringify({
+        type: "join",
+        payload: {
+          spaceId: spaceId,
+          token: adminToken,
+        },
+      })
+    );
+    console.log("insixce first test1");
+    const message1 = await waitForAndPopLatestMessage(ws1Messages);
+    console.log("insixce first test2");
+    ws2.send(
+      JSON.stringify({
+        type: "join",
+        payload: {
+          spaceId: spaceId,
+          token: userToken,
+        },
+      })
+    );
+    console.log("insixce first test3");
+
+    const message2 = await waitForAndPopLatestMessage(ws2Messages);
+    const message3 = await waitForAndPopLatestMessage(ws1Messages);
+
+    expect(message1.type).toBe("space-joined");
+    expect(message2.type).toBe("space-joined");
+    expect(message1.payload.users.length).toBe(0);
+    expect(message2.payload.users.length).toBe(1);
+    expect(message3.type).toBe("user-joined");
+    expect(message3.payload.x).toBe(message2.payload.spawn.x);
+    expect(message3.payload.y).toBe(message2.payload.spawn.y);
+    expect(message3.payload.userId).toBe(userId);
+
+    adminX = message1.payload.spawn.x;
+    adminY = message1.payload.spawn.y;
+
+    userX = message2.payload.spawn.x;
+    userY = message2.payload.spawn.y;
+  },10000);
+
+  test("User should not be able to move across the boundary of the wall", async () => {
+    ws1.send(
+      JSON.stringify({
+        type: "move",
+        payload: {
+          x: 1000000,
+          y: 10000,
+        },
+      })
+    );
+
+    const message = await waitForAndPopLatestMessage(ws1Messages);
+    expect(message.type).toBe("movement-rejected");
+    expect(message.payload.x).toBe(adminX);
+    expect(message.payload.y).toBe(adminY);
+  });
+
+  test("User should not be able to move two blocks at the same time", async () => {
+    ws1.send(
+      JSON.stringify({
+        type: "move",
+        payload: {
+          x: adminX + 2,
+          y: adminY,
+        },
+      })
+    );
+
+    const message = await waitForAndPopLatestMessage(ws1Messages);
+    expect(message.type).toBe("movement-rejected");
+    expect(message.payload.x).toBe(adminX);
+    expect(message.payload.y).toBe(adminY);
+  });
+
+  
+
+  test("If a user leaves, the other user receives a leave event", async () => {
+    ws1.close();
+    const message = await waitForAndPopLatestMessage(ws2Messages);
+    expect(message.type).toBe("user-left");
+    expect(message.payload.userId).toBe(adminUserId);
   });
 });
